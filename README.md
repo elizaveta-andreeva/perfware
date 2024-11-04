@@ -75,11 +75,11 @@ sudo perf record -ag fio fio.job
 sudo perf script report gecko
 ```
 Полученный график:
-[]()
+![](https://github.com/elizaveta-andreeva/perfware/blob/main/big_chart.png)
 
 ## Модификация gecko
 Удалось сделать так, чтобы возле каждого потока отображалось к какому `cpu` он относился. Я предполагала, что будет возможность группировать потоки точно также по процессорам, как изначально по процессам, но сам Firefox Profiler во-первых всегда ищет `pid`, во-вторых непонятно какие данные ему передавать, чтобы он интерпретировал их как процессор (это могло быть условное поле "cpu", но он не интерпретирует его). 
 
-[](https://github.com/elizaveta-andreeva/perfware/blob/main/modified.png)
+![](https://github.com/elizaveta-andreeva/perfware/blob/main/modified.png)
 
 Модифицированный код `gecko.py` находится [тут](https://github.com/elizaveta-andreeva/perfware/blob/main/gecko.py).
