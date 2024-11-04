@@ -31,38 +31,64 @@ size=5G
 ## Измерения производительности
 Выполним команду 
 ```bash
-sudo perf record -e block:block_rq_complete -a fio fio.job
+sudo perf record -e block:block_rq_issue -ag fio fio.job
 ```
+
 И посмотрим на результат
 ```bash
-$ sudo perf script
-         swapper       0 [000]  6062.527812: block:block_rq_complete: 8,16 WS () 52556360 + 8 [0]
-         swapper       0 [000]  6062.527829: block:block_rq_complete: 8,16 WS () 53635272 + 8 [0]
-         swapper       0 [000]  6062.527839: block:block_rq_complete: 8,16 R () 61578424 + 8 [0]
-         swapper       0 [000]  6062.527893: block:block_rq_complete: 8,16 R () 57951224 + 8 [0]
-         swapper       0 [000]  6062.527897: block:block_rq_complete: 8,16 WS () 49722312 + 8 [0]
-         swapper       0 [000]  6062.527900: block:block_rq_complete: 8,16 R () 58263560 + 8 [0]
-         swapper       0 [000]  6062.527904: block:block_rq_complete: 8,16 WS () 45426280 + 8 [0]
-         swapper       0 [000]  6062.527907: block:block_rq_complete: 8,16 R () 58306288 + 8 [0]
-         swapper       0 [000]  6062.527909: block:block_rq_complete: 8,16 R () 62572648 + 8 [0]
-         swapper       0 [000]  6062.527913: block:block_rq_complete: 8,16 R () 61750224 + 8 [0]
-         swapper       0 [000]  6062.527916: block:block_rq_complete: 8,16 WS () 49008208 + 8 [0]
-         swapper       0 [000]  6062.527919: block:block_rq_complete: 8,16 R () 60029528 + 8 [0]
-         swapper       0 [000]  6062.527922: block:block_rq_complete: 8,16 R () 55691968 + 8 [0]
-         swapper       0 [000]  6062.527924: block:block_rq_complete: 8,16 WS () 48783632 + 8 [0]
-         swapper       0 [000]  6062.527927: block:block_rq_complete: 8,16 WS () 53603232 + 8 [0]
-         swapper       0 [000]  6062.527929: block:block_rq_complete: 8,16 R () 57184280 + 8 [0]
-         swapper       0 [000]  6062.527932: block:block_rq_complete: 8,16 WS () 54367416 + 8 [0]
-         swapper       0 [000]  6062.527973: block:block_rq_complete: 8,16 WS () 48500784 + 8 [0]
-         swapper       0 [000]  6062.527976: block:block_rq_complete: 8,16 R () 56165576 + 8 [0]
-         swapper       0 [000]  6062.527979: block:block_rq_complete: 8,16 WS () 45494544 + 8 [0]
-         swapper       0 [000]  6062.527982: block:block_rq_complete: 8,16 R () 59324408 + 8 [0]
-         swapper       0 [000]  6062.527985: block:block_rq_complete: 8,16 WS () 53761560 + 8 [0]
-         swapper       0 [000]  6062.527987: block:block_rq_complete: 8,16 WS () 51621672 + 8 [0]
-         swapper       0 [000]  6062.527990: block:block_rq_complete: 8,16 WS () 54530304 + 8 [0]
-         swapper       0 [000]  6062.527992: block:block_rq_complete: 8,16 WS () 47382616 + 8 [0]
-         swapper       0 [000]  6062.527994: block:block_rq_complete: 8,16 WS () 48909376 + 8 [0]
+sudo perf report
+# To display the perf.data header info, please use --header/--header-only options.
+#
+#
+# Total Lost Samples: 0
+#
+# Samples: 2M of event 'block:block_rq_issue'
+# Event count (approx.): 2621595
+#
+# Children      Self  Command  Shared Object      Symbol
+# ........  ........  .......  .................  ....................................
+#
+    99.99%    99.99%  fio      [kernel.kallsyms]  [k] blk_mq_start_request
+    99.99%     0.00%  fio      libc.so.6          [.] syscall
+            |
+            ---syscall
+               entry_SYSCALL_64_after_hwframe
+               do_syscall_64
+               __x64_sys_io_submit
+               io_submit_one
+               |
+               |--50.00%--aio_read
+               |          ext4_file_read_iter
+               |          iomap_dio_rw
+               |          __iomap_dio_rw
+               |          blk_finish_plug
+               |          blk_flush_plug_list
+               |          blk_mq_flush_plug_list
+               |          blk_mq_sched_insert_requests
+               |          blk_mq_try_issue_list_directly
+               |          blk_mq_request_issue_directly
+               |          __blk_mq_try_issue_directly
+               |          scsi_queue_rq
+               |          blk_mq_start_request
+               |          blk_mq_start_request
+               |
+                --50.00%--aio_write
+                          ext4_file_write_iter
+                          iomap_dio_rw
+                          __iomap_dio_rw
+                          blk_finish_plug
+                          blk_flush_plug_list
+                          blk_mq_flush_plug_list
+                          blk_mq_sched_insert_requests
+                          blk_mq_try_issue_list_directly
+                          blk_mq_request_issue_directly
+                          __blk_mq_try_issue_directly
+                          scsi_queue_rq
+                          blk_mq_start_request
+                          blk_mq_start_request
+...
 ```
+
 
 Для записи измерений производительности выполним команду:
 ```bash
