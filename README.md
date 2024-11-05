@@ -107,8 +107,8 @@ sudo perf script report gecko
 
 Заметно, что на протяжении всего периода нагрузка +- одинаковая.
 Есть один интересный момент
-![]()
-![]()
+![](https://github.com/elizaveta-andreeva/perfware/blob/main/increased_chart.png)
+![](https://github.com/elizaveta-andreeva/perfware/blob/main/increased_chart2.png)
 Но я не смогла понять как его проанализировать.
 
 ## Модификация gecko
